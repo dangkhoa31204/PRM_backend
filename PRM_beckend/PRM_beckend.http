@@ -1,0 +1,6 @@
+@PRM_beckend_HostAddress = http://localhost:5090
+
+GET {{PRM_beckend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

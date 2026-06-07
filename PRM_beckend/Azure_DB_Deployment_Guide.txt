@@ -1,0 +1,59 @@
+================================================================================
+HƯỚNG DẪN TRIỂN KHAI DATABASE LÊN AZURE SQL DATABASE (DỰ ÁN PRM_BECKEND)
+================================================================================
+
+Dưới đây là các bước chi tiết mà chúng ta đã thực hiện để đưa cơ sở dữ liệu Microsoft SQL Server (QROrderingDB) của bạn lên đám mây Azure.
+
+--------------------------------------------------------------------------------
+BƯỚC 1: KHỞI TẠO MIGRATIONS CHO DỰ ÁN (.NET EF CORE)
+--------------------------------------------------------------------------------
+Do dự án của bạn ban đầu chưa có thư mục Migrations, chúng ta cần tạo file Migration đầu tiên dựa trên DbContext hiện tại.
+Lệnh đã chạy trong terminal thư mục dự án:
+> dotnet ef migrations add InitialCreate --context AppDbContext
+
+Lệnh này tạo ra thư mục "Migrations" trong dự án chứa định nghĩa cấu trúc bảng.
+
+--------------------------------------------------------------------------------
+BƯỚC 2: TẠO CƠ SỞ DỮ LIỆU TRÊN AZURE PORTAL
+--------------------------------------------------------------------------------
+Bạn đã tạo thủ công các tài nguyên sau trên Azure Portal:
+- Resource Group: QROrdering-RG
+- SQL Server (Logical): qrordering-server-khoa.database.windows.net
+- SQL Database: QROrderingDB
+- Thông tin quản trị (Server admin):
+  + Username: azureadmin
+  + Mật khẩu: [Mật khẩu của bạn]
+- Pricing tier: General Purpose - Serverless (Gen5, 1 vCore). Đã bật tính năng tự động dừng (Auto-pause) sau 1 giờ không hoạt động để tránh hao hụt credit.
+
+--------------------------------------------------------------------------------
+BƯỚC 3: CẤU HÌNH TƯỜNG LỬA (FIREWALL) TRÊN AZURE
+--------------------------------------------------------------------------------
+Để cho phép máy tính của bạn và các dịch vụ khác truy cập được vào database trên Azure:
+1. Nhấn nút "Set server firewall" trong trang quản lý database QROrderingDB.
+2. Thêm IP máy tính của bạn (ví dụ: 171.249.62.45) vào danh sách quy tắc tường lửa (Firewall rules).
+3. Bật "Allow Azure services and resources to access this server" (Cho phép các dịch vụ Azure kết nối).
+4. Nhấn Save (Lưu).
+
+--------------------------------------------------------------------------------
+BƯỚC 4: ĐẨY CẤU TRÚC DATABASE LÊN AZURE (APPLY MIGRATIONS)
+--------------------------------------------------------------------------------
+Chạy lệnh CLI để tự động tạo toàn bộ các bảng lên Azure SQL Database:
+> dotnet ef database update --connection "Server=tcp:qrordering-server-khoa.database.windows.net,1433;Initial Catalog=QROrderingDB;Persist Security Info=False;User ID=azureadmin;Password=[Mật khẩu của bạn];MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=60;"
+
+Kết quả: Toàn bộ bảng (Accounts, MenuItems, Tables, Orders, OrderItems và __EFMigrationsHistory) đã được khởi tạo thành công trên Azure.
+
+--------------------------------------------------------------------------------
+BƯỚC 5: CẬP NHẬT CẤU HÌNH TRONG CODE BACKEND
+--------------------------------------------------------------------------------
+1. Cấu hình Connection String trong "appsettings.json":
+   Cập nhật chuỗi kết nối "DefaultConnection" để trỏ tới server Azure:
+   "Server=tcp:qrordering-server-khoa.database.windows.net,1433;Initial Catalog=QROrderingDB;Persist Security Info=False;User ID=azureadmin;Password=[Mật khẩu của bạn];MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=60;"
+
+2. Dọn dẹp trong file "Data/AppDbContext.cs":
+   Xóa bỏ chuỗi kết nối local được ghi đè cứng (hardcoded) ở phương thức OnConfiguring để bảo mật thông tin và đảm bảo EF Core sẽ lấy Connection String trực tiếp từ appsettings.json.
+
+3. Build và kiểm tra lại dự án:
+   > dotnet build
+
+Dự án hiện tại đã build thành công 100% không có lỗi.
+================================================================================
