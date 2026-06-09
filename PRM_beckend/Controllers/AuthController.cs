@@ -156,6 +156,23 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
+    /// Admin lay danh sach tat ca tai khoan Staff role 2.
+    /// </summary>
+    [Authorize(Roles = "1")]
+    [HttpGet("staff")]
+    public async Task<ActionResult<IEnumerable<AccountResponse>>> GetStaff()
+    {
+        var staffAccounts = await _context.Accounts
+            .Where(a => a.Role == 2)
+            .OrderBy(a => a.FullName)
+            .ThenBy(a => a.Username)
+            .Select(a => ToResponse(a))
+            .ToListAsync();
+
+        return Ok(staffAccounts);
+    }
+
+    /// <summary>
     /// Admin tao tai khoan Staff moi. Role mac dinh la 2.
     /// </summary>
     [Authorize(Roles = "1")]
