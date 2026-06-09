@@ -63,6 +63,9 @@ public class OrdersController : ControllerBase
     }
 
     // POST /api/orders — Bàn đặt món mới (Public — khách quét QR)
+    /// <summary>
+    /// Tạo order mới cho bàn. Public, dùng khi khách quét QR và đặt món.
+    /// </summary>
     [AllowAnonymous]
     [HttpPost]
     public async Task<ActionResult<OrderResponse>> PlaceOrder([FromBody] PlaceOrderRequest request)
@@ -124,6 +127,9 @@ public class OrdersController : ControllerBase
     }
 
     // POST /api/orders/{id}/items — Thêm món vào đơn đang mở (Public)
+    /// <summary>
+    /// Thêm món vào order đang mở. Public, dùng khi khách gọi thêm món.
+    /// </summary>
     [AllowAnonymous]
     [HttpPost("{id}/items")]
     public async Task<ActionResult<OrderResponse>> AddItems(int id, [FromBody] AddItemsRequest request)
@@ -171,6 +177,9 @@ public class OrdersController : ControllerBase
     }
 
     // GET /api/orders — Lấy tất cả đơn hàng (Staff, Admin)
+    /// <summary>
+    /// Lấy danh sách order, có thể lọc theo status. Staff hoặc Admin được truy cập.
+    /// </summary>
     [Authorize(Roles = "1,2")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<OrderResponse>>> GetAll([FromQuery] int? status)
@@ -192,6 +201,9 @@ public class OrdersController : ControllerBase
     }
 
     // GET /api/orders/{id} — Chi tiết 1 đơn (Staff, Admin)
+    /// <summary>
+    /// Lấy chi tiết một order theo id. Staff hoặc Admin được truy cập.
+    /// </summary>
     [Authorize(Roles = "1,2")]
     [HttpGet("{id}")]
     public async Task<ActionResult<OrderResponse>> GetById(int id)
@@ -202,6 +214,9 @@ public class OrdersController : ControllerBase
     }
 
     // GET /api/orders/table/{tableId} — Đơn đang active của bàn (Public)
+    /// <summary>
+    /// Lấy các order đang active của một bàn. Public, dùng để xem đơn hiện tại của bàn.
+    /// </summary>
     [AllowAnonymous]
     [HttpGet("table/{tableId}")]
     public async Task<ActionResult<IEnumerable<OrderResponse>>> GetByTable(int tableId)
@@ -219,6 +234,9 @@ public class OrdersController : ControllerBase
     }
 
     // PATCH /api/orders/{id}/status — Đổi trạng thái đơn (Staff, Admin)
+    /// <summary>
+    /// Cập nhật trạng thái order. Staff hoặc Admin được thực hiện.
+    /// </summary>
     [Authorize(Roles = "1,2")]
     [HttpPatch("{id}/status")]
     public async Task<ActionResult<OrderResponse>> UpdateStatus(int id, [FromBody] UpdateStatusRequest request)

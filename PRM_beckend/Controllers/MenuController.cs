@@ -36,6 +36,9 @@ public class MenuController : ControllerBase
             m.Category, m.ImageUrl, m.IsAvailable, m.CreatedAt, m.UpdatedAt);
 
     // GET /api/menu — Lấy tất cả món đang hiển thị (Public)
+    /// <summary>
+    /// Lấy danh sách món đang hiển thị cho khách. Public, không cần đăng nhập.
+    /// </summary>
     [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MenuItemResponse>>> GetAvailable()
@@ -50,6 +53,9 @@ public class MenuController : ControllerBase
     }
 
     // GET /api/menu/all — Lấy tất cả món kể cả ẩn (Admin)
+    /// <summary>
+    /// Lấy tất cả món trong hệ thống, bao gồm món đã ẩn. Chỉ Admin được truy cập.
+    /// </summary>
     [Authorize(Roles = "1")]
     [HttpGet("all")]
     public async Task<ActionResult<IEnumerable<MenuItemResponse>>> GetAll()
@@ -63,6 +69,9 @@ public class MenuController : ControllerBase
     }
 
     // GET /api/menu/{id} — Chi tiết 1 món (Public)
+    /// <summary>
+    /// Lấy chi tiết một món theo id. Public, không cần đăng nhập.
+    /// </summary>
     [AllowAnonymous]
     [HttpGet("{id}")]
     public async Task<ActionResult<MenuItemResponse>> GetById(int id)
@@ -73,6 +82,9 @@ public class MenuController : ControllerBase
     }
 
     // POST /api/menu — Tạo món mới (Admin)
+    /// <summary>
+    /// Tạo món mới trong menu. Chỉ Admin được thực hiện.
+    /// </summary>
     [Authorize(Roles = "1")]
     [HttpPost]
     public async Task<ActionResult<MenuItemResponse>> Create([FromBody] CreateMenuItemRequest request)
@@ -100,6 +112,9 @@ public class MenuController : ControllerBase
     }
 
     // PUT /api/menu/{id} — Cập nhật món (Admin)
+    /// <summary>
+    /// Cập nhật thông tin món ăn theo id. Chỉ Admin được thực hiện.
+    /// </summary>
     [Authorize(Roles = "1")]
     [HttpPut("{id}")]
     public async Task<ActionResult<MenuItemResponse>> Update(int id, [FromBody] UpdateMenuItemRequest request)
@@ -125,6 +140,9 @@ public class MenuController : ControllerBase
     }
 
     // DELETE /api/menu/{id} — Xóa món (Admin)
+    /// <summary>
+    /// Xóa món khỏi menu nếu món chưa từng nằm trong order. Chỉ Admin được thực hiện.
+    /// </summary>
     [Authorize(Roles = "1")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
@@ -142,6 +160,9 @@ public class MenuController : ControllerBase
     }
 
     // PATCH /api/menu/{id}/toggle-availability — Ẩn/hiện món (Admin hoặc Staff)
+    /// <summary>
+    /// Bật hoặc tắt trạng thái hiển thị của món. Admin hoặc Staff được thực hiện.
+    /// </summary>
     [Authorize(Roles = "1,2")]
     [HttpPatch("{id}/toggle-availability")]
     public async Task<ActionResult<MenuItemResponse>> ToggleAvailability(int id)

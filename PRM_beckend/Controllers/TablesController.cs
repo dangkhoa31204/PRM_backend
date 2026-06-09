@@ -37,6 +37,9 @@ public class TablesController : ControllerBase
         new(t.TableId, t.Capacity, t.Status, GetStatusLabel(t.Status), t.CreatedAt);
 
     // GET /api/tables — Lấy tất cả bàn (Admin)
+    /// <summary>
+    /// Lấy danh sách tất cả bàn. Chỉ Admin được truy cập.
+    /// </summary>
     [Authorize(Roles = "1")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<TableResponse>>> GetAll()
@@ -49,6 +52,9 @@ public class TablesController : ControllerBase
     }
 
     // GET /api/tables/{id} — Chi tiết 1 bàn (Admin)
+    /// <summary>
+    /// Lấy chi tiết một bàn theo id. Chỉ Admin được truy cập.
+    /// </summary>
     [Authorize(Roles = "1")]
     [HttpGet("{id}")]
     public async Task<ActionResult<TableResponse>> GetById(int id)
@@ -59,6 +65,9 @@ public class TablesController : ControllerBase
     }
 
     // POST /api/tables — Tạo bàn mới (Admin)
+    /// <summary>
+    /// Tạo bàn mới. Chỉ Admin được thực hiện.
+    /// </summary>
     [Authorize(Roles = "1")]
     [HttpPost]
     public async Task<ActionResult<TableResponse>> Create([FromBody] CreateTableRequest request)
@@ -80,6 +89,9 @@ public class TablesController : ControllerBase
     }
 
     // PUT /api/tables/{id} — Cập nhật bàn (Admin)
+    /// <summary>
+    /// Cập nhật sức chứa và trạng thái của bàn. Chỉ Admin được thực hiện.
+    /// </summary>
     [Authorize(Roles = "1")]
     [HttpPut("{id}")]
     public async Task<ActionResult<TableResponse>> Update(int id, [FromBody] UpdateTableRequest request)
@@ -101,6 +113,9 @@ public class TablesController : ControllerBase
     }
 
     // DELETE /api/tables/{id} — Xóa bàn (Admin)
+    /// <summary>
+    /// Xóa bàn nếu bàn không có order đang active. Chỉ Admin được thực hiện.
+    /// </summary>
     [Authorize(Roles = "1")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
@@ -119,6 +134,9 @@ public class TablesController : ControllerBase
     }
 
     // GET /api/tables/{id}/qrcode — Tạo QR code cho bàn (Admin)
+    /// <summary>
+    /// Tạo và tải QR code cho một bàn. Chỉ Admin được truy cập.
+    /// </summary>
     [Authorize(Roles = "1")]
     [HttpGet("{id}/qrcode")]
     public async Task<IActionResult> GetQrCode(int id)
