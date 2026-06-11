@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using PRM_beckend.Data;
+using PRM_beckend.Hubs;
 using PRM_beckend.Models;
 using System.Security.Claims;
 
@@ -12,10 +14,12 @@ namespace PRM_beckend.Controllers;
 public class OrdersController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private readonly IHubContext<StaffNotificationHub> _staffHub;
 
-    public OrdersController(AppDbContext context)
+    public OrdersController(AppDbContext context, IHubContext<StaffNotificationHub> staffHub)
     {
         _context = context;
+        _staffHub = staffHub;
     }
 
     // --- DTOs ---
@@ -122,8 +126,13 @@ public class OrdersController : ControllerBase
 
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetById), new { id = order.OrderId },
-            await BuildResponse(_context, order));
+        var response = await BuildResponse(_context, order);
+
+        await _staffHub.Clients
+            .Group(StaffNotificationHub.StaffGroup)
+            .SendAsync("OrderCreated", response);
+
+        return CreatedAtAction(nameof(GetById), new { id = order.OrderId }, response);
     }
 
     // POST /api/orders/{id}/items — Thêm món vào đơn đang mở (Public)
@@ -173,7 +182,13 @@ public class OrdersController : ControllerBase
 
         await _context.SaveChangesAsync();
 
-        return Ok(await BuildResponse(_context, order));
+        var response = await BuildResponse(_context, order);
+
+        await _staffHub.Clients
+            .Group(StaffNotificationHub.StaffGroup)
+            .SendAsync("OrderUpdated", response);
+
+        return Ok(response);
     }
 
     // GET /api/orders — Lấy tất cả đơn hàng (Staff, Admin)
@@ -269,6 +284,13 @@ public class OrdersController : ControllerBase
         }
 
         await _context.SaveChangesAsync();
-        return Ok(await BuildResponse(_context, order));
+
+        var response = await BuildResponse(_context, order);
+
+        await _staffHub.Clients
+            .Group(StaffNotificationHub.StaffGroup)
+            .SendAsync("OrderStatusUpdated", response);
+
+        return Ok(response);
     }
 }
