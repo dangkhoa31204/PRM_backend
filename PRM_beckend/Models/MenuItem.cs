@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace PRM_beckend.Models;
@@ -13,7 +13,7 @@ public partial class MenuItem
 
     public decimal Price { get; set; }
 
-    public int Category { get; set; }
+    public PRM_beckend.Models.Enums.MenuCategory Category { get; set; }
 
     public string? ImageUrl { get; set; }
 

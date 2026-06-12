@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRM_beckend.Data;
 using PRM_beckend.Models;
-
+using PRM_beckend.Models.Enums;
 namespace PRM_beckend.Controllers;
 
 [ApiController]
@@ -20,16 +20,16 @@ public class MenuController : ControllerBase
     // --- DTOs ---
     public record MenuItemResponse(
         int MenuItemId, string Name, string? Description,
-        decimal Price, int Category, string? ImageUrl,
+        decimal Price, MenuCategory Category, string? ImageUrl,
         bool IsAvailable, DateTime CreatedAt, DateTime? UpdatedAt);
 
     public record CreateMenuItemRequest(
         string Name, string? Description,
-        decimal Price, int Category, string? ImageUrl);
+        decimal Price, MenuCategory Category, string? ImageUrl);
 
     public record UpdateMenuItemRequest(
         string Name, string? Description,
-        decimal Price, int Category, string? ImageUrl, bool IsAvailable);
+        decimal Price, MenuCategory Category, string? ImageUrl, bool IsAvailable);
 
     private static MenuItemResponse ToResponse(MenuItem m) =>
         new(m.MenuItemId, m.Name, m.Description, m.Price,
