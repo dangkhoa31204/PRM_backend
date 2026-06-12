@@ -146,7 +146,7 @@ public class TablesController : ControllerBase
 
         // URL sẽ được mã hóa vào QR (mobile app / web sẽ đọc tableId từ đây)
         var baseUrl = _configuration["AppBaseUrl"] ?? "https://localhost:7227";
-        var qrContent = $"{baseUrl}/order?tableId={id}";
+        var qrContent = $"{baseUrl}/?tableId={id}";
 
         var qrGenerator = new QRCodeGenerator();
         var qrData = qrGenerator.CreateQrCode(qrContent, QRCodeGenerator.ECCLevel.Q);
