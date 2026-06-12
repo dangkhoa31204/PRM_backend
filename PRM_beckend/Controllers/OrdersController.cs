@@ -27,7 +27,7 @@ public class OrdersController : ControllerBase
 
     public record PlaceOrderRequest(int TableId, List<OrderItemRequest> Items, string? Note);
 
-    public record AddItemsRequest(List<OrderItemRequest> Items);
+    public record AddItemsRequest(List<OrderItemRequest> Items, string? Note);
 
     public record UpdateStatusRequest(int Status);
 
@@ -178,6 +178,8 @@ public class OrdersController : ControllerBase
         // Cập nhật lại tổng tiền
         var addedAmount = request.Items.Sum(i => menuItems[i.MenuItemId].Price * i.Quantity);
         order.TotalAmount += addedAmount;
+        if (!string.IsNullOrWhiteSpace(request.Note))
+            order.Note = request.Note;
         order.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();

@@ -9,6 +9,9 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Services
+builder.Services.AddCors(options => options.AddPolicy("AllowAll",
+    p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
+
 builder.Services.AddControllers();
 builder.Services.AddSignalR();
 
@@ -100,6 +103,8 @@ app.UseSwaggerUI();
 
 // Health Check
 app.MapGet("/", () => "PRM Backend Running");
+
+app.UseCors("AllowAll");
 
 app.UseAuthentication();
 app.UseAuthorization();
